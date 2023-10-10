@@ -2,14 +2,16 @@
 
 use App\Http\API\SignInWithEmailAndPasswordController;
 use App\Http\API\SignUpWithEmailAndPasswordController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\SiteController;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Route;
-
-
-Route::middleware('auth:sanctum')->get('/viewer', function (Request $request) {
-    return $request->user();
-});
 
 Route::post('/sign-up', SignUpWithEmailAndPasswordController::class);
 
 Route::post('/sign-in', SignInWithEmailAndPasswordController::class);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/viewer', fn() => UserResource::make(\Illuminate\Support\Facades\Auth::user()));
+
+    Route::apiResource('sites', SiteController::class);
+});
