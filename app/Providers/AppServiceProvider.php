@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::unguard();
     }
-    
+
     public function boot(): void
     {
         JsonResource::withoutWrapping();
