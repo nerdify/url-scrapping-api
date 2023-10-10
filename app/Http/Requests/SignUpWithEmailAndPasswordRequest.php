@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Requests;
 
 use App\Models\User;
@@ -25,7 +24,7 @@ class SignUpWithEmailAndPasswordRequest extends FormRequest
             'email' => [
                 'required',
                 'email:dns,rfc',
-                Rule::unique(User::class, 'email')
+                Rule::unique(User::class, 'email'),
             ],
             'password' => [
                 'required',

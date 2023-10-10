@@ -16,7 +16,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class SnapshotResource extends JsonResource
 {
-
     public function toArray(Request $request): array
     {
         return [
