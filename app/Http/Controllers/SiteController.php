@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSiteRequest;
 use App\Http\Requests\UpdateSiteRequest;
 use App\Http\Resources\SiteResource;
+use App\Jobs\TakeSiteSnapshot;
 use App\Models\Site;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -21,12 +22,15 @@ class SiteController extends Controller
     {
         $attrs = $request->safe()->collect();
 
-        $site = Auth::user()->sites()->create([
+        $site = Site::create([
             ...$attrs->except(['scan_interval', 'scan_interval_type', 'dispatch_now'])->toArray(),
             'scan_interval' => get_interval_in_minutes($attrs['scan_interval'], $attrs['scan_interval_type']),
+            'user_id' => Auth::id(),
         ]);
 
-        //TODO: dispatch job to scan site
+        TakeSiteSnapshot::dispatch($site)->delay(
+            $attrs['dispatch_now'] ? now() : now()->addMinutes($site->scan_interval)
+        );
 
         return SiteResource::make($site);
     }
