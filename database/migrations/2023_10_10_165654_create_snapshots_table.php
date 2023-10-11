@@ -13,7 +13,7 @@ return new class extends Migration
 
             $table->foreignId('site_id')->constrained();
 
-            $table->longText('html');
+            $table->longText('html')->nullable();
             $table->unsignedMediumInteger('status_code');
 
             $table->timestamps();
