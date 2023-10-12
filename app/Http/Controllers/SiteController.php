@@ -8,6 +8,7 @@ use App\Http\Resources\SiteResource;
 use App\Jobs\TakeSiteSnapshot;
 use App\Models\Site;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,7 +19,7 @@ class SiteController extends Controller
         return SiteResource::collection(Auth::user()->sites()->paginate())->response();
     }
 
-    public function store(StoreSiteRequest $request): JsonResponse
+    public function store(StoreSiteRequest $request): JsonResource
     {
         $attrs = $request->safe()->collect();
 
@@ -28,9 +29,9 @@ class SiteController extends Controller
             'user_id' => Auth::id(),
         ]);
 
-        TakeSiteSnapshot::dispatch($site)->delay(
-            $attrs['dispatch_now'] ? now() : now()->addMinutes($site->scan_interval)
-        );
+        TakeSiteSnapshot::dispatch($site)
+            ->onQueue('snapshots')
+            ->delay($attrs['dispatch_now'] ? now() : now()->addMinutes($site->scan_interval));
 
         return SiteResource::make($site);
     }
