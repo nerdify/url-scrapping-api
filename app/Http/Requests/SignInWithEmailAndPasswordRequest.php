@@ -19,7 +19,7 @@ class SignInWithEmailAndPasswordRequest extends FormRequest
             'email' => [
                 'required',
                 'email:dns,rfc',
-                Rule::exists(User::class, 'email')
+                Rule::exists(User::class, 'email'),
             ],
             'password' => [
                 'required',

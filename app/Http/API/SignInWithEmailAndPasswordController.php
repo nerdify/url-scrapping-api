@@ -10,14 +10,13 @@ use Illuminate\Support\Facades\Auth;
 
 class SignInWithEmailAndPasswordController extends Controller
 {
-
     public function __invoke(SignInWithEmailAndPasswordRequest $request): JsonResponse
     {
         $attrs = $request->safe()->toArray();
 
-        if(!Auth::attempt($attrs)) {
+        if (! Auth::attempt($attrs)) {
             return response()->json([
-                'message' => 'Invalid credentials'
+                'message' => 'Invalid credentials',
             ], 401);
         }
 

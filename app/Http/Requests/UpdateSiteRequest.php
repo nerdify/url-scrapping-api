@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class SignUpWithEmailAndPasswordRequest extends FormRequest
+class UpdateSiteRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -21,13 +19,19 @@ class SignUpWithEmailAndPasswordRequest extends FormRequest
                 'string',
                 'min:3',
             ],
-            'email' => [
+            'url' => [
                 'required',
-                'email:dns,rfc',
-                Rule::unique(User::class, 'email'),
+                'url',
             ],
-            'password' => [
+            'scan_interval' => [
                 'required',
+                'integer',
+                'min:1',
+            ],
+            'scan_interval_type' => [
+                'required',
+                'string',
+                'in:min,hour,day,week,month,year',
             ],
         ];
     }
