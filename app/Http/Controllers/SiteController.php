@@ -38,7 +38,7 @@ class SiteController extends Controller
 
     public function show(Site $site): JsonResponse
     {
-        return SiteResource::make($site);
+        return SiteResource::make($site->load(['snapshots']))->response();
     }
 
     public function update(UpdateSiteRequest $request, Site $site): JsonResponse
@@ -50,7 +50,7 @@ class SiteController extends Controller
             'scan_interval' => get_interval_in_minutes($attrs['scan_interval'], $attrs['scan_interval_type']),
         ]);
 
-        return SiteResource::make($site);
+        return SiteResource::make($site)->response();
     }
 
 
