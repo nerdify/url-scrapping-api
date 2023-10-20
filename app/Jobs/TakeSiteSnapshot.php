@@ -36,10 +36,6 @@ class TakeSiteSnapshot implements ShouldQueue
 
             logger($response->status());
 
-            $this->site->update([
-                'last_scanned_at' => now()->toDateTime(),
-            ]);
-
             /** @var Snapshot $snapshot */
             $snapshot = $this->site->snapshots()->create([
                 'status_code' => $response->status(),
@@ -51,34 +47,42 @@ class TakeSiteSnapshot implements ShouldQueue
                     Storage::disk('public')->makeDirectory("snapshots/site-{$this->site->id}");
                 }
 
-                $filename = "{$this->site->id}-".now()->format('Ymd-His').".png";
+                $filename = "{$this->site->id}-" . now()->format('Ymd-His') . ".png";
                 $pathToSnapshot = Storage::disk('public')->path("snapshots/site-{$this->site->id}");
 
                 logger($pathToSnapshot);
 
-                $browserShot = Browsershot::url($this->site->url)
-                    ->newHeadless()
-                    ->setChromePath('/usr/bin/google-chrome'));
+                $browserShot = Browsershot::url($this->site->url);
 
                 $snapshot->update([
                     'html' => $browserShot->bodyHtml(),
                 ]);
 
                 $browserShot->setScreenshotType('png', 100)
-                    ->save($pathToSnapshot.'/'.$filename);
+                    ->setOption('newHeadless', true)
+                    ->noSandbox()
+                    //laradock node binary path
+                    ->setNodeBinary('/usr/local/bin/node')
+                    ->save($pathToSnapshot . '/' . $filename);
 
-                $snapshot->addMedia($pathToSnapshot.'/'.$filename)
+                $snapshot->addMedia($pathToSnapshot . '/' . $filename)
                     ->withResponsiveImages()
                     ->toMediaCollection();
             }
+
+            $this->site->update([
+                'last_scanned_at' => now()->toDateTime(),
+            ]);
 
             DB::commit();
 
 //            $this->release($this->site->scan_interval * 60);
 
-            TakeSiteSnapshot::dispatch($this->site->fresh())
+            $job = TakeSiteSnapshot::dispatch($this->site->fresh())
                 ->onQueue('snapshots')
                 ->delay(now()->addMinutes($this->site->scan_interval));
+
+            $job->
 
             logger('TakeSiteSnapshot job finished, next job will be released in ' . $this->site->scan_interval * 60 . ' seconds');
 

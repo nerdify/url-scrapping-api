@@ -11,10 +11,13 @@
         "php": "^8.1",
         "barryvdh/laravel-debugbar": "^3.9",
         "barryvdh/laravel-ide-helper": "^2.13",
+        "google/apiclient": "^2.15",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
+        "laravel/socialite": "^5.9",
         "laravel/tinker": "^2.8",
+        "socialiteproviders/google": "^4.1",
         "spatie/browsershot": "^3.59",
         "spatie/laravel-medialibrary": "^10.0.0"
     },
